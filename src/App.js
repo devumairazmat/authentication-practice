@@ -5,24 +5,47 @@ import { Container } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useRef } from "react";
-import { signUp } from "./firebase";
+import { signUp, useAuth, login, logout } from "./firebase";
+
 function App() {
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const currentUser = useAuth();
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  async function handleSubmit(e) {
+  async function handleSignup() {
     setLoading(true);
-    try{
+    try {
       await signUp(emailRef.current.value, passwordRef.current.value);
-    }
-    catch{
+    } catch {
       alert("Error signing up");
     }
     setLoading(false);
   }
+
+  async function handleLogin() {
+    setLoading(true);
+    try {
+      await login(emailRef.current.value, passwordRef.current.value);
+    } catch {
+      alert("Error!");
+    }
+    setLoading(false);
+  }
+
+  async function handleLogout() {
+    setLoading(true);
+    try {
+      await logout();
+    } catch {
+      alert("Error!");
+    }
+    setLoading(false);
+  }
+
   return (
     <>
+     {/* <p>Currently logged in as: {currentUser?.emailRef} </p> */}
       <Container>
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -44,11 +67,29 @@ function App() {
               placeholder="Password"
             />
           </Form.Group>
-          <Button disabled={loading} variant="primary" type="submit" onClick={handleSubmit}>
+          <Button
+            disabled={loading || currentUser}
+            variant="primary"
+            type="submit"
+            onClick={handleSignup}
+          >
             Sign Up
           </Button>
-          <Button className="m-2" variant="danger" type="reset">
-            Reset
+          <Button
+            className="m-2"
+            variant="danger"
+            disabled={loading || currentUser}
+            onClick={handleLogin}
+          >
+            Login
+          </Button>
+          <Button
+            className="m-2"
+            variant="dark"
+            disabled={loading || !currentUser}
+            onClick={handleLogout}
+          >
+            Log Out
           </Button>
         </Form>
       </Container>
