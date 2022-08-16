@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { Container } from "react-bootstrap";
@@ -7,17 +7,19 @@ import Form from "react-bootstrap/Form";
 import { useRef } from "react";
 import { signUp } from "./firebase";
 function App() {
+  const [loading,setLoading] = useState(false);
   const emailRef = useRef();
   const passwordRef = useRef();
 
   async function handleSubmit(e) {
+    setLoading(true);
     try{
-      e.preventDefault();
       await signUp(emailRef.current.value, passwordRef.current.value);
     }
     catch{
       alert("Error signing up");
     }
+    setLoading(false);
   }
   return (
     <>
@@ -42,7 +44,7 @@ function App() {
               placeholder="Password"
             />
           </Form.Group>
-          <Button variant="primary" type="submit" onClick={handleSubmit}>
+          <Button disabled={loading} variant="primary" type="submit" onClick={handleSubmit}>
             Sign Up
           </Button>
           <Button className="m-2" variant="danger" type="reset">
